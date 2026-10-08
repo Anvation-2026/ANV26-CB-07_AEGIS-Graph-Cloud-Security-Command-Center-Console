@@ -11,7 +11,7 @@ import { AttackPathsCard } from '../components/AttackPathsCard';
 import { SentinelCopilotCard } from '../components/SentinelCopilotCard';
 
 export const Overview: React.FC = () => {
-  const { analysis, status, devices, runAnalysis } = useApp();
+  const { analysis, status, devices, runAnalysis, showRfidApprovalModal } = useApp();
 
   // Approval audit metadata for status line
   const [approvalInfo, setApprovalInfo] = useState<{
@@ -89,9 +89,30 @@ export const Overview: React.FC = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">
             <span>{analysis.display_name}</span>
             {analysis.applied ? (
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> SYSTEM SAFE
-              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  showRfidApprovalModal({
+                    approver: approvalInfo?.approver || 'Dr. Aisha Rao (Security Lead)',
+                    card_id: '04:A1:B2:C3',
+                    fix_id: 'choke-point-severed',
+                    device_id: 'ESP32-S3 Physical Console',
+                    paths_before: analysis.before?.path_count ?? 3,
+                    paths_after: 0,
+                    risk_before: analysis.before?.risk ?? 88,
+                    risk_after: 0,
+                    timestamp: Date.now(),
+                  })
+                }
+                className="inline-flex items-center gap-2 text-xs font-mono font-bold bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/40 shadow-xs transition-all cursor-pointer group"
+                title="Open Cyber Security SAFE STATE Briefing Popup"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                <span>SYSTEM IS SAFE</span>
+                <span className="text-[10px] bg-emerald-600 text-white font-mono px-1.5 py-0.2 rounded tracking-wider">
+                  VIEW POPUP
+                </span>
+              </button>
             ) : (
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-rose-50 text-rose-700 px-2.5 py-0.5 rounded-full border border-rose-200">
                 <ShieldAlert className="w-3.5 h-3.5 text-rose-600" /> OPEN ATTACK VECTORS
