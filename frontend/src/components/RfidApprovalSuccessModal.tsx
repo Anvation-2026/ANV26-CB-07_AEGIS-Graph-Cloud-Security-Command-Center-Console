@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShieldCheck,
@@ -14,9 +14,12 @@ import {
   Sparkles,
   Terminal,
   Activity,
-  Lock
+  Lock,
+  Award
 } from 'lucide-react';
 import { RfidApprovalModalData } from '../types';
+import { useApp } from '../context/AppContext';
+import { ComplianceCertificateModal } from './ComplianceCertificateModal';
 
 interface RfidApprovalSuccessModalProps {
   data: RfidApprovalModalData | null;
@@ -28,6 +31,8 @@ export const RfidApprovalSuccessModal: React.FC<RfidApprovalSuccessModalProps> =
   onClose,
 }) => {
   const navigate = useNavigate();
+  const { analysis } = useApp();
+  const [showCert, setShowCert] = useState(false);
 
   // Close on Escape key press
   useEffect(() => {
@@ -259,17 +264,17 @@ export const RfidApprovalSuccessModal: React.FC<RfidApprovalSuccessModalProps> =
           </div>
 
           {/* Cyber Action Navigation Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-2.5">
             <button
               type="button"
               onClick={() => {
                 onClose();
                 navigate('/');
               }}
-              className="w-full sm:flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-extrabold text-xs py-3 px-5 rounded-xl shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
+              className="w-full sm:flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-extrabold text-xs py-3 px-4 rounded-xl shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
             >
               <ShieldCheck className="w-4 h-4" />
-              <span>Explore Secured Topology</span>
+              <span>Explore Topology</span>
             </button>
 
             <button
@@ -278,14 +283,35 @@ export const RfidApprovalSuccessModal: React.FC<RfidApprovalSuccessModalProps> =
                 onClose();
                 navigate('/remediation');
               }}
-              className="w-full sm:flex-1 bg-slate-900 hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 border border-emerald-500/40 hover:border-emerald-500/70 font-mono font-bold text-xs py-3 px-5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
+              className="w-full sm:flex-1 bg-slate-900 hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 border border-emerald-500/40 hover:border-emerald-500/70 font-mono font-bold text-xs py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
             >
               <span>View Policy & Diff</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </button>
+
+            <button
+              type="button"
+              onClick={() => setShowCert(true)}
+              className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-amber-400 hover:text-amber-300 border border-amber-500/40 hover:border-amber-500/70 font-mono font-bold text-xs py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
+              title="Generate printable Cryptographic Audit Certificate"
+            >
+              <Award className="w-4 h-4 text-amber-400" />
+              <span>Audit Proof</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Official Cryptographic Certificate Modal */}
+      <ComplianceCertificateModal
+        isOpen={showCert}
+        onClose={() => setShowCert(false)}
+        analysis={analysis}
+        approver={data.approver}
+        cardId={data.card_id}
+        deviceId={data.device_id}
+        hash={data.hash}
+      />
     </div>
   );
 };

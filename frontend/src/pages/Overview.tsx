@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { ShieldAlert, CheckCircle2, Zap, Clock } from 'lucide-react';
+import { ShieldAlert, CheckCircle2, Zap, Clock, Award } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { api } from '../api';
 import { EmptyState } from '../components/EmptyState';
@@ -9,9 +9,12 @@ import { RiskOverviewCard } from '../components/RiskOverviewCard';
 import { RemediationCard } from '../components/RemediationCard';
 import { AttackPathsCard } from '../components/AttackPathsCard';
 import { SentinelCopilotCard } from '../components/SentinelCopilotCard';
+import { MitreAttackMatrixCard } from '../components/MitreAttackMatrixCard';
+import { ComplianceCertificateModal } from '../components/ComplianceCertificateModal';
 
 export const Overview: React.FC = () => {
   const { analysis, status, devices, runAnalysis, showRfidApprovalModal } = useApp();
+  const [showCertModal, setShowCertModal] = useState(false);
 
   // Approval audit metadata for status line
   const [approvalInfo, setApprovalInfo] = useState<{
@@ -89,30 +92,42 @@ export const Overview: React.FC = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">
             <span>{analysis.display_name}</span>
             {analysis.applied ? (
-              <button
-                type="button"
-                onClick={() =>
-                  showRfidApprovalModal({
-                    approver: approvalInfo?.approver || 'Dr. Aisha Rao (Security Lead)',
-                    card_id: '04:A1:B2:C3',
-                    fix_id: 'choke-point-severed',
-                    device_id: 'ESP32-S3 Physical Console',
-                    paths_before: analysis.before?.path_count ?? 3,
-                    paths_after: 0,
-                    risk_before: analysis.before?.risk ?? 88,
-                    risk_after: 0,
-                    timestamp: Date.now(),
-                  })
-                }
-                className="inline-flex items-center gap-2 text-xs font-mono font-bold bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/40 shadow-xs transition-all cursor-pointer group"
-                title="Open Cyber Security SAFE STATE Briefing Popup"
-              >
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-                <span>SYSTEM IS SAFE</span>
-                <span className="text-[10px] bg-emerald-600 text-white font-mono px-1.5 py-0.2 rounded tracking-wider">
-                  VIEW POPUP
-                </span>
-              </button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() =>
+                    showRfidApprovalModal({
+                      approver: approvalInfo?.approver || 'Dr. Aisha Rao (Security Lead)',
+                      card_id: '04:A1:B2:C3',
+                      fix_id: 'choke-point-severed',
+                      device_id: 'ESP32-S3 Physical Console',
+                      paths_before: analysis.before?.path_count ?? 3,
+                      paths_after: 0,
+                      risk_before: analysis.before?.risk ?? 88,
+                      risk_after: 0,
+                      timestamp: Date.now(),
+                    })
+                  }
+                  className="inline-flex items-center gap-2 text-xs font-mono font-bold bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/40 shadow-xs transition-all cursor-pointer group"
+                  title="Open Cyber Security SAFE STATE Briefing Popup"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                  <span>SYSTEM IS SAFE</span>
+                  <span className="text-[10px] bg-emerald-600 text-white font-mono px-1.5 py-0.2 rounded tracking-wider">
+                    VIEW POPUP
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCertModal(true)}
+                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 px-3 py-1 rounded-full border border-amber-500/40 shadow-xs transition-all cursor-pointer"
+                  title="Open Cryptographic Audit Proof & Certificate"
+                >
+                  <Award className="w-3.5 h-3.5 text-amber-600" />
+                  <span>AUDIT CERTIFICATE</span>
+                </button>
+              </div>
             ) : (
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-rose-50 text-rose-700 px-2.5 py-0.5 rounded-full border border-rose-200">
                 <ShieldAlert className="w-3.5 h-3.5 text-rose-600" /> OPEN ATTACK VECTORS
@@ -166,8 +181,19 @@ export const Overview: React.FC = () => {
         </div>
       </div>
 
+      {/* MITRE ATT&CK Cloud Threat Matrix */}
+      <MitreAttackMatrixCard analysis={analysis} />
+
       {/* Bottom: Sentinel AI Copilot Panel (Section G) */}
       <SentinelCopilotCard analysis={analysis} />
+
+      {/* Official Cryptographic Certificate Modal */}
+      <ComplianceCertificateModal
+        isOpen={showCertModal}
+        onClose={() => setShowCertModal(false)}
+        analysis={analysis}
+        approver={approvalInfo?.approver}
+      />
     </div>
   );
 };

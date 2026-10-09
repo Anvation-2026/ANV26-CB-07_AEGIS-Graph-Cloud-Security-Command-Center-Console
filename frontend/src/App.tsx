@@ -9,6 +9,7 @@ import { Remediation } from './pages/Remediation';
 import { Hardware } from './pages/Hardware';
 import { Cards } from './pages/Cards';
 import { Audit } from './pages/Audit';
+import { SentinelAI } from './pages/SentinelAI';
 
 export const App: React.FC = () => {
   const { rfidApprovalModal, closeRfidApprovalModal } = useApp();
@@ -29,6 +30,7 @@ export const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Overview />} />
             <Route path="/remediation" element={<Remediation />} />
+            <Route path="/ai" element={<SentinelAI />} />
             <Route path="/hardware" element={<Hardware />} />
             <Route path="/cards" element={<Cards />} />
             <Route path="/audit" element={<Audit />} />

@@ -9,7 +9,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Activity,
-  Radio
+  Radio,
+  Sparkles
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -63,6 +64,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: ShieldCheck,
           badge: status?.pending_fix ? 'PENDING' : 'SAFE',
           badgeColor: status?.pending_fix ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        },
+        {
+          name: 'Sentinel AI Analytics',
+          shortName: 'Sentinel AI',
+          path: '/ai',
+          icon: Sparkles,
+          badge: 'COPILOT',
+          badgeColor: 'bg-blue-50 text-blue-700 border-blue-200 font-semibold',
         },
       ],
     },
